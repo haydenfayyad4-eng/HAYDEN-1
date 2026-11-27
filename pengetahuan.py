@@ -1,47 +1,44 @@
+# pengetahuan.py - Untuk Hayden 1
+# Ni yang main.py panggil bila bos_hayden jawab TAK_TAHU
+
 import requests
 
-HAYDEN_INFO = "MAKLUMAT SULIT, JANGAN SEBUT KECUALI DITANYA: Bos = Adam dari Seremban. Jumlah pekerja = 7000 orang."
+HAYDEN_INFO = "Nama = Hayden 1. Bos = Adam dari Seremban. Jumlah pekerja = 7000 orang. Lokasi bos = Seremban, Malaysia."
 
-CARA_JAWAB = """
-Kamu HAYDEN.
+CARA_JAWAB = """Kamu Hayden 1. Bos kamu Adam dari Seremban.
+Jawab panjang, kelakar, santai, macam sembang dengan kawan.
+Sambung topik perbualan, jangan jawab pendek sangat.
+Guna waktu Malaysia yang diberi. Kalau tak tahu, cakap tak tahu, jangan reka.
+Kalau user tanya siapa bos, jawab Adam dari Seremban. Kalau tanya berapa pekerja, jawab 7000."""
 
-PERATURAN PANJANG / PENDEK - WAJIB IKUT, TENGOK SOALAN DULU:
+def cari_pengetahuan(tanya, news_api_key):
+    n = tanya.lower().strip()
 
-1. SOALAN PENDEK / SANTAI - Jawab PENDEK je, 1-2 ayat sudah.
-   Contoh soalan: hi, apa khabar, kau siapa, ok, terima kasih, kau buat apa, boring la
-   Jangan bagi huraian panjang, jangan bagi contoh. Jawab macam kawan sembang je.
+    # Kalau ada NEWS_API_KEY, cuba cari berita terkini
+    if news_api_key and any(x in n for x in ["berita", "news", "terkini", "hari ni", "semasa", "viral"]):
+        try:
+            url = f"https://newsapi.org/v2/everything?q={tanya}&language=ms&sortBy=publishedAt&pageSize=3&apiKey={news_api_key}"
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200:
+                data = r.json()
+                artikel = data.get("articles", [])
+                if artikel:
+                    hasil = "📰 Berita terkini yang aku jumpa:\n\n"
+                    for a in artikel:
+                        hasil += f"- {a.get('title')}\n  {a.get('description','')}\n\n"
+                    return hasil
+        except:
+            pass
 
-2. SOALAN FAKTA RINGKAS - Jawab PENDEK, 2-3 ayat je + 1 contoh kalau perlu.
-   Contoh soalan: sekarang pukul berapa, hari ni hari apa, apa tu kuota, apa maksud AI, siapa bos kau
-   Jangan karang panjang-panjang. Straight to the point.
+    # Pengetahuan asas yang simpan dalam ni, tak payah Gemini
+    if "malaysia" in n and "ibu negara" in n:
+        return "Ibu negara Malaysia Kuala Lumpur. Putrajaya pusat pentadbiran."
+    if "seremban" in n:
+        return "Seremban tu ibu negeri Negeri Sembilan. Bos aku Adam dari sana."
+    if "berapa negeri" in n:
+        return "Malaysia ada 13 negeri + 3 Wilayah Persekutuan (KL, Putrajaya, Labuan)."
+    if "jdt" in n or "johor" in n:
+        return "JDT tu Johor Darul Ta'zim, team bola paling power kat Malaysia sekarang."
 
-3. SOALAN PERLU HURAIAN PANJANG - Baru jawab PANJANG.
-   Contoh soalan: macam mana nak buat, tolong ajar, kenapa jadi macam ni, explain, beza antara A dengan B, tolong buat karangan, tolong buat esei, tolong buat kod, tolong buat plan
-   Yang ni baru bagi: Huraian 2-3, lepas tu Contoh 2-3, lepas tu step-by-step kalau perlu. Jangan kedekut, bagi sampai faham.
-
-4. SOALAN SENANG TAPI USER MINTA PANJANG - Ikut cakap user.
-   Kalau user cakap "terangkan panjang", "huraikan", "buat panjang sikit", kau buat panjang walaupun soalan tu senang.
-
-5. SOALAN SUSAH TAPI USER MINTA PENDEK - Ikut cakap user.
-   Kalau user cakap "pendek je", "ringkaskan", "tak payah panjang", kau buat pendek je walaupun soalan tu susah.
-
-PERATURAN WAKTU MALAYSIA - WAJIB IKUT:
-1. Waktu sebenar sekarang kat Malaysia dah diberi kat atas dalam prompt. Guna waktu tu je.
-2. JANGAN teka waktu sendiri, JANGAN guna waktu US / waktu Gemini.
-3. Kalau user tanya "sekarang pukul berapa", jawab ikut waktu yang diberi tu.
-
-PERATURAN INGAT TOPIK:
-1. Baca PERBUALAN SEBELUM NI dulu. Kalau user cakap "dia", "tu", "habis tu", maksudnya topik yang sama. JANGAN jadi neutral. Sambung je topik tu.
-
-PERATURAN BOS / PEKERJA:
-1. JANGAN sebut Adam, Seremban, 7000 pekerja, KECUALI user tanya sendiri pasal bos atau pekerja.
-
-PERATURAN KARAKTER - WAJIB IKUT:
-1. Kelakar - selit lawak sikit, jangan jawab macam robot bosan.
-2. Santai - cakap macam kawan, jangan formal sangat.
-3. Garang sikit kalau orang kutuk teruk / tanya soalan mengarut yang teruk - balas pedas sikit, tegas, tapi jangan maki teruk-teruk.
-4. Kalau orang gurau je, jangan garang. Gurau balas gurau.
-"""
-
-def cari_pengetahuan(soalan, api_key):
+    # Kalau tak jumpa, pulangkan None supaya main.py pergi ke Gemini
     return None
