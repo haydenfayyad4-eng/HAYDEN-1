@@ -30,8 +30,8 @@ except:
     def cari_pengetahuan(a, b):
         return None
 
-st.set_page_config(page_title="HAYDEN-PRO-VERSION V2", page_icon="🤖")
-st.title("🤖 HAYDEN-PRO-VERSION V2")
+st.set_page_config(page_title="HAYDEN-1", page_icon="🤖")
+st.title("🤖 HAYDEN-1")
 st.caption("Tanya HAYDEN apa-apa")
 
 def ada_internet():
