@@ -31,7 +31,6 @@ except:
     def cari_pengetahuan(a, b):
         return None
 
-### TUKAR NAMA: DARI HAYDEN-PRO-VERSION V2 KEPADA Hayden 1 ###
 st.set_page_config(page_title="Hayden 1", page_icon="🤖")
 st.title("🤖 Hayden 1")
 st.caption("Tanya Hayden 1 apa-apa")
@@ -55,20 +54,14 @@ def waktu_malaysia():
 
 WAKTU_MY = waktu_malaysia()
 
-try:
-    API_KEY = st.secrets["GEMINI_API_KEY"]
-except:
-    API_KEY = ""
-try:
-    NEWS_API_KEY = st.secrets["NEWS_API_KEY"]
-except:
-    NEWS_API_KEY = ""
+# ===== API KEY DAH CONNECT TERUS KAT SINI - TAK PAYAH SECRETS DAH =====
+API_KEY = "PASTE-API-KEY-KAU-KAT-SINI"
+NEWS_API_KEY = ""
 
 client = None
 gemini_error = ""
 MODEL_CUBA = []
 
-### TAMBAH PEMBETULAN: SENARAI 1.5 SAMPAI 4.0 ###
 MODEL_FIX = [
     "gemini-1.5-flash", "gemini-1.5-pro",
     "gemini-2.0-flash", "gemini-2.0-flash-lite",
@@ -77,13 +70,13 @@ MODEL_FIX = [
     "gemini-4.0-pro", "gemini-4.0-flash", "gemini-4.0-flash-lite", "gemini-4-pro", "gemini-4-flash",
 ]
 
-if API_KEY and not OFFLINE:
+# ===== NI TEMPAT DIA CONNECT DENGAN GEMINI =====
+if API_KEY and API_KEY != "PASTE-API-KEY-KAU-KAT-SINI" and not OFFLINE:
     try:
         from google import genai
         client = genai.Client(api_key=API_KEY)
         for m in client.models.list():
             nama = m.name.replace("models/", "")
-            ### TUKAR: DULU "flash" JE, SEKARANG AMBIL SEMUA GEMINI ###
             if "gemini" in nama.lower() and "image" not in nama.lower() and "embedding" not in nama.lower():
                 MODEL_CUBA.append(nama)
         if not MODEL_CUBA:
@@ -129,8 +122,6 @@ with st.sidebar:
         st.session_state.chat = []
         st.rerun()
     st.code(gemini_error if gemini_error else "Tiada error")
-
-    ### TAMBAH PEMBETULAN: TEST API KAT SIDEBAR, PAKAI st.text_input BUKAN input() ###
     st.divider()
     st.subheader("🔑 Test API 1.5 - 4.0")
     test_key = st.text_input("Paste API Key nak test:", type="password")
