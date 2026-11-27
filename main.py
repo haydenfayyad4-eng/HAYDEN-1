@@ -1,6 +1,7 @@
 import streamlit as st
 import socket
 import urllib.parse
+import requests
 from datetime import datetime, timezone, timedelta
 
 try:
@@ -30,9 +31,10 @@ except:
     def cari_pengetahuan(a, b):
         return None
 
-st.set_page_config(page_title="HAYDEN-1", page_icon="🤖")
-st.title("🤖 HAYDEN-1")
-st.caption("Tanya HAYDEN apa-apa")
+### TUKAR NAMA: DARI HAYDEN-PRO-VERSION V2 KEPADA Hayden 1 ###
+st.set_page_config(page_title="Hayden 1", page_icon="🤖")
+st.title("🤖 Hayden 1")
+st.caption("Tanya Hayden 1 apa-apa")
 
 def ada_internet():
     try:
@@ -66,16 +68,29 @@ client = None
 gemini_error = ""
 MODEL_CUBA = []
 
+### TAMBAH PEMBETULAN: SENARAI 1.5 SAMPAI 4.0 ###
+MODEL_FIX = [
+    "gemini-1.5-flash", "gemini-1.5-pro",
+    "gemini-2.0-flash", "gemini-2.0-flash-lite",
+    "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.5-flash-lite",
+    "gemini-3-pro-preview", "gemini-3-flash-preview", "gemini-3-pro", "gemini-3-flash",
+    "gemini-4.0-pro", "gemini-4.0-flash", "gemini-4.0-flash-lite", "gemini-4-pro", "gemini-4-flash",
+]
+
 if API_KEY and not OFFLINE:
     try:
         from google import genai
         client = genai.Client(api_key=API_KEY)
         for m in client.models.list():
             nama = m.name.replace("models/", "")
-            if "flash" in nama.lower() and "image" not in nama.lower() and "preview" not in nama.lower():
+            ### TUKAR: DULU "flash" JE, SEKARANG AMBIL SEMUA GEMINI ###
+            if "gemini" in nama.lower() and "image" not in nama.lower() and "embedding" not in nama.lower():
                 MODEL_CUBA.append(nama)
+        if not MODEL_CUBA:
+            MODEL_CUBA = MODEL_FIX.copy()
     except Exception as e:
         gemini_error = str(e)
+        MODEL_CUBA = MODEL_FIX.copy()
 
 def tanya_gemini(prompt):
     global gemini_error
@@ -115,6 +130,30 @@ with st.sidebar:
         st.rerun()
     st.code(gemini_error if gemini_error else "Tiada error")
 
+    ### TAMBAH PEMBETULAN: TEST API KAT SIDEBAR, PAKAI st.text_input BUKAN input() ###
+    st.divider()
+    st.subheader("🔑 Test API 1.5 - 4.0")
+    test_key = st.text_input("Paste API Key nak test:", type="password")
+    if st.button("TEST API SEKARANG"):
+        if not test_key:
+            st.warning("Paste API Key dulu!")
+        else:
+            hidup = []
+            for m in MODEL_FIX:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={test_key}"
+                data = {"contents": [{"parts": [{"text": "Hi, jawab 'ok' je"}]}]}
+                try:
+                    r = requests.post(url, json=data, timeout=15)
+                    if r.status_code == 200:
+                        st.success(f"✅ {m} HIDUP")
+                        hidup.append(m)
+                    else:
+                        st.error(f"❌ {m} MATI {r.status_code}")
+                except Exception as e:
+                    st.error(f"❌ {m} {e}")
+            if hidup:
+                st.info(f"Hidup: {', '.join(hidup)}")
+
 for m in st.session_state.chat:
     with st.chat_message(m["role"]):
         if m.get("type") == "image":
@@ -122,14 +161,14 @@ for m in st.session_state.chat:
         else:
             st.write(m["text"])
 
-tanya = st.chat_input("Tanya HAYDEN apa-apa... / buat imej ...")
+tanya = st.chat_input("Tanya Hayden 1 apa-apa... / buat imej ...")
 
 if tanya:
     st.session_state.chat.append({"role": "user", "text": tanya})
     with st.chat_message("user"):
         st.write(tanya)
     with st.chat_message("assistant"):
-        with st.spinner("HAYDEN tengah fikir..."):
+        with st.spinner("Hayden 1 tengah fikir..."):
             t_lower = tanya.lower().strip()
             kata_imej = ["buat imej", "buat gambar", "buatkan gambar", "buatkan imej", "lukis", "gambar", "buat poster", "buat logo"]
             nak_imej = False
